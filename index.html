@@ -255,6 +255,8 @@ textarea.cap{min-height:220px;line-height:1.5}
 .pol p{margin:0 0 10px;color:var(--ink2);font-size:15px;line-height:1.55}
 .polnav{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:22px;padding-top:14px;border-top:1px solid var(--line)}
 .polnav .linkbtn{font-size:14px;text-align:left}
+<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-auth-compat.js"></script>
 </style>
 </head>
 <body>
@@ -269,7 +271,7 @@ textarea.cap{min-height:220px;line-height:1.5}
 /* ───────── Source de la page (pour republier une nouvelle version) ───────── */
 var SRC = document.currentScript.textContent;
 var CSS = document.getElementById('css').textContent;
-var HEAD = '<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<title>AETERNA STORE – Boutique en ligne, commande sur WhatsApp</title>\n<meta name="description" content="AETERNA STORE, boutique en ligne : découvrez la collection et commandez directement sur WhatsApp.">\n<meta name="theme-color" content="#1A1F4A">\n<link rel="icon" href="/favicon.ico" sizes="any">\n<link rel="apple-touch-icon" href="/apple-touch-icon.png">\n<link rel="canonical" href="https://aeternastore.netlify.app/">\n<meta property="og:type" content="website">\n<meta property="og:site_name" content="AETERNA STORE">\n<meta property="og:locale" content="fr_FR">\n<meta property="og:title" content="AETERNA STORE – Boutique en ligne">\n<meta property="og:description" content="Découvrez la collection et commandez directement sur WhatsApp.">\n<meta property="og:url" content="https://aeternastore.netlify.app/">\n<meta property="og:image" content="https://aeternastore.netlify.app/og-image.png">\n<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="630">\n<meta name="twitter:card" content="summary_large_image">\n<link rel="preconnect" href="https://fonts.googleapis.com">\n<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Marcellus&display=swap" rel="stylesheet">\n';
+var HEAD = '<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<title>AETERNA STORE – Boutique en ligne, commande sur WhatsApp</title>\n<meta name="description" content="AETERNA STORE, boutique en ligne : découvrez la collection et commandez directement sur WhatsApp.">\n<meta name="theme-color" content="#1A1F4A">\n<link rel="icon" href="/favicon.ico" sizes="any">\n<link rel="apple-touch-icon" href="/apple-touch-icon.png">\n<link rel="canonical" href="https://aeternastore.netlify.app/">\n<meta property="og:type" content="website">\n<meta property="og:site_name" content="AETERNA STORE">\n<meta property="og:locale" content="fr_FR">\n<meta property="og:title" content="AETERNA STORE – Boutique en ligne">\n<meta property="og:description" content="Découvrez la collection et commandez directement sur WhatsApp.">\n<meta property="og:url" content="https://aeternastore.netlify.app/">\n<meta property="og:image" content="https://aeternastore.netlify.app/og-image.png">\n<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="630">\n<meta name="twitter:card" content="summary_large_image">\n<link rel="preconnect" href="https://fonts.googleapis.com">\n<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Marcellus&display=swap" rel="stylesheet">\n<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js"><\/script>\n<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-auth-compat.js"><\/script>\n';
 
 function buildDoc(state){
   var json = JSON.stringify(state).replace(/</g,'\\u003c');
@@ -412,7 +414,7 @@ function renderShell(){
     '<footer id="contact" class="ftr"><div class="wrap"><div class="ftr-in"><div><div class="logo">'+mark(34)+'<span class="lg-name">AETERNA</span><span class="lg-sub">STORE</span></div><p>'+esc(s.slogan)+'</p></div>'+
     '<div><h4>Contact</h4>'+(n?'<p><a href="https://wa.me/'+n+'" target="_blank" rel="noopener noreferrer">WhatsApp : +'+n+'</a></p>':'')+(s.address?'<p>'+esc(s.address)+'</p>':'')+(s.hours?'<p>'+esc(s.hours)+'</p>':'')+
     (/^https?:\/\//i.test(s.facebook)?'<p><a href="'+esc(s.facebook)+'" target="_blank" rel="noopener noreferrer">Notre page Facebook</a></p>':'')+'</div>'+
-    '<div><h4>Boutique</h4><p><a href="#collection">La collection</a></p><p><button class="linkbtn" data-action="cart">Mon panier</button></p>'+(admin?'<p><button class="linkbtn" data-action="admin">Espace propriétaire</button></p>':'')+'</div></div>'+
+    '<div><h4>Boutique</h4><p><a href="#collection">La collection</a></p><p><button class="linkbtn" data-action="cart">Mon panier</button></p>'+(admin?'<p><button class="linkbtn" data-action="admin">Espace propriétaire</button></p><p><button class="linkbtn" data-action="logout">Se déconnecter</button></p>':'<p><button class="linkbtn" data-action="login">Connexion propriétaire</button></p>')+'</div></div>'+
     '<div class="copy">© '+new Date().getFullYear()+' AETERNA STORE. Tous droits réservés.<div class="legal">'+polLinks()+'</div></div></div></footer>'+
     '<button class="fab" data-action="wa-hello" aria-label="Écrire sur WhatsApp">'+ic('chat',26)+'</button>';
   $('#sort').value=ui.sort;
@@ -775,6 +777,9 @@ document.addEventListener('click',function(e){
     case 'pnotify':{var pn=find(pm.id);openWA('Bonjour AETERNA STORE 👋\nL’article « '+pn.name+' » sera-t-il bientôt disponible ?');break}
     case 'wa-hello':openWA('Bonjour AETERNA STORE 👋\nJ’ai une question sur vos articles.');break;
     case 'admin':openAdmin(t.dataset.tab);break;
+    case 'login':openLogin();break;
+    case 'login-submit':doLogin();break;
+    case 'logout':doLogout();break;
     case 'policy':openPolicy(id);break;
 
     case 'a-close':closeAdmin();break;
@@ -852,10 +857,41 @@ document.addEventListener('change',function(e){
 /* ───────── Démarrage ───────── */
 renderShell();renderGrid();
 var onClaude=!!(window.claude&&window.claude.use);
-function wantsAdmin(){return /^#(proprietaire|admin)$/i.test(location.hash||'')}
-function openLocalAdmin(){if(admin||onClaude||!wantsAdmin())return;admin=true;renderShell();renderGrid();openAdmin('products')}
-window.addEventListener('hashchange',openLocalAdmin);
-openLocalAdmin();
+var FIREBASE_CONFIG={apiKey:'AIzaSyD_oSltrEodR8ut1FWmrCbOPBVslHJogZg',authDomain:'white-house667.firebaseapp.com',projectId:'white-house667',appId:'1:499541870918:web:ea0e30bf7214129344fd47'};
+var fbReady=false;
+try{
+  if(window.firebase&&FIREBASE_CONFIG.apiKey.indexOf('REMPLACER')===-1){
+    firebase.initializeApp(FIREBASE_CONFIG);
+    fbReady=true;
+    firebase.auth().onAuthStateChanged(function(u){
+      var was=admin;admin=!!u;
+      if(u&&!was)toast('Connecté. Vous pouvez gérer la boutique.');
+      if(!u&&was){draft=null;dirty=false;adm.edit=null}
+      if(was!==admin){closeLayer();renderShell();renderGrid()}
+    });
+  }
+}catch(e){}
+function openLogin(){
+  showLayer('<div class="sh-head"><h2>Connexion propriétaire</h2><button class="iconbtn" data-action="close" data-focus aria-label="Fermer">'+ic('close')+'</button></div><div class="sh-body" id="loginbody"></div>','sheet');
+  renderLogin();
+}
+function renderLogin(err){
+  var b=$('#loginbody');if(!b)return;
+  if(!fbReady){b.innerHTML='<p class="note">La connexion n’est pas encore configurée pour cette boutique.</p>';return}
+  b.innerHTML=
+    '<label class="fld"><span>Email</span><input id="login-email" type="email" autocomplete="username" placeholder="vous@exemple.com"></label>'+
+    '<label class="fld"><span>Mot de passe</span><input id="login-pass" type="password" autocomplete="current-password" placeholder="••••••••"></label>'+
+    (err?'<p class="note" style="color:var(--sale)">'+esc(err)+'</p>':'')+
+    '<button class="btn block" data-action="login-submit">Se connecter</button>';
+}
+function doLogin(){
+  if(!fbReady){renderLogin();return}
+  var e=$('#login-email'),p=$('#login-pass'),email=e?e.value.trim():'',pass=p?p.value:'';
+  if(!email||!pass){renderLogin('Entrez votre email et votre mot de passe.');return}
+  var btn=$('[data-action="login-submit"]');if(btn){btn.disabled=true;btn.textContent='Connexion…'}
+  firebase.auth().signInWithEmailAndPassword(email,pass).catch(function(){renderLogin('Email ou mot de passe incorrect.')});
+}
+function doLogout(){if(fbReady)firebase.auth().signOut()}
 (async function(){
   if(!onClaude)return;
   try{
